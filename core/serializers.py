@@ -1,7 +1,8 @@
-from datetime import timezone
+from django.utils import timezone
 import re
 from rest_framework import serializers
 from .models import HealthProfessional, Appointment
+from core import models as core_models
 
 class HealthProfessionalSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,27 +31,45 @@ class HealthProfessionalSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("A especialidade é obrigatória.")
         return value
     
+    def _clean_phone(self, value):
+        return re.sub(r'\D', '', value)
+    
     def validate_phone(self, value):
         if not value:
             raise serializers.ValidationError("O telefone é obrigatório.")
 
-        if re.search(r'[a-zA-Z]', value):
+        if any(char.isalpha() for char in value):
             raise serializers.ValidationError("Número de telefone inválido.")
 
-        cleaned = re.sub(r'\D', '', value)
+        cleaned = self._clean_phone(value)
 
         if len(cleaned) < 10 or len(cleaned) > 11:
             raise serializers.ValidationError("Número de telefone inválido.")
-        
-        existing_phone = HealthProfessional.objects.filter(phone__iregex=r'\D*'.join(cleaned))
-        
-        if self.instance:
-            existing_phone = existing_phone.exclude(pk=self.instance.pk)
 
-        if existing_phone.exists():
+        existing = HealthProfessional.objects.all()
+        existing = existing.annotate(cleaned_phone=core_models.Func(
+            core_models.F('phone'),
+            function='REGEXP_REPLACE',
+            template="%(function)s(%(expressions)s, '[^0-9]', '', 'g')"
+        )).filter(cleaned_phone=cleaned)
+
+        if self.instance:
+            existing = existing.exclude(pk=self.instance.pk)
+
+        if existing.exists():
             raise serializers.ValidationError("O número de telefone já existe.")
 
         return value
+    
+    def create(self, validated_data):
+        validated_data['phone'] = self._clean_phone(validated_data['phone'])
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        if 'phone' in validated_data:
+            validated_data['phone'] = self._clean_phone(validated_data['phone'])
+        return super().update(instance, validated_data)
+
 
 class AppointmentSerializer(serializers.ModelSerializer):
     professional = serializers.PrimaryKeyRelatedField(queryset=HealthProfessional.objects.all())
