@@ -1,0 +1,36 @@
+# Ambiente Python
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+medmanage/__pycache__/
+
+# Ambiente virtual (venv)
+venv/
+.env
+.env.*
+
+# Arquivos do Poetry
+poetry.lock
+
+# Banco de dados local (caso esteja usando SQLite temporariamente)
+*.sqlite3
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Docker
+*.log
+*.pid
+*.sock
+*.db
+*.pid
+*.tar
+docker-compose.override.yml
