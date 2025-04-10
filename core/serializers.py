@@ -8,12 +8,22 @@ class HealthProfessionalSerializer(serializers.ModelSerializer):
         model = HealthProfessional
         fields = '__all__'
     
-    def validate_social_name(self, value):
-        if not value.strip():
-            raise serializers.ValidationError("O nome social é obrigatório.")
-        if len(value.strip()) < 3:
-            raise serializers.ValidationError("O nome social deve ter pelo menos 3 caracteres.")
-        return value
+def validate_social_name(self, value):
+    value = value.strip()
+
+    if not value:
+        raise serializers.ValidationError("O nome social é obrigatório.")
+    if len(value) < 3:
+        raise serializers.ValidationError("O nome social deve ter pelo menos 3 caracteres.")
+
+    existing = HealthProfessional.objects.filter(social_name__iexact=value)
+    if self.instance:
+        existing = existing.exclude(pk=self.instance.pk)
+    
+    if existing.exists():
+        raise serializers.ValidationError("Já existe um profissional com esse nome social.")
+
+    return value
     
     def validate_specialty(self, value):
         if not value or not value.strip():
