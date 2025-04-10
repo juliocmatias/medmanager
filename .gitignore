@@ -11,7 +11,7 @@ db.sqlite3
 media/
 staticfiles/
 
-# If you're using Django Debug Toolbar or similar
+# Debug tools
 debug_toolbar/
 
 # Environment variables
@@ -28,17 +28,13 @@ venv/
 # macOS
 .DS_Store
 
-# Poetry
-poetry.lock
-
-# Pytest
+# Build / packaging
 *.cover
 .coveragerc
+*.egg
 *.egg-info/
 dist/
 build/
-*.egg
-*.egg-info/
 *.whl
 
 # Pytest cache
@@ -50,10 +46,8 @@ build/
 .mypy.ini
 
 # Docker
-*.log
 *.pid
 *.sock
 *.db
-*.pid
 *.tar
 docker-compose.override.yml
