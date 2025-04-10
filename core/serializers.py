@@ -41,6 +41,14 @@ class HealthProfessionalSerializer(serializers.ModelSerializer):
 
         if len(cleaned) < 10 or len(cleaned) > 11:
             raise serializers.ValidationError("Número de telefone inválido.")
+        
+        existing_phone = HealthProfessional.objects.filter(phone__iregex=r'\D*'.join(cleaned))
+        
+        if self.instance:
+            existing_phone = existing_phone.exclude(pk=self.instance.pk)
+
+        if existing_phone.exists():
+            raise serializers.ValidationError("O número de telefone já existe.")
 
         return value
 
