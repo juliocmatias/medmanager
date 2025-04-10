@@ -1,3 +1,4 @@
+from datetime import timezone
 import re
 from rest_framework import serializers
 from .models import HealthProfessional, Appointment
@@ -39,3 +40,24 @@ class AppointmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = '__all__'
+
+    def validate_appointment_date(self, value):
+        if value < timezone.now():
+            raise serializers.ValidationError("A data da consulta não pode estar no passado.")
+        return value
+
+    def validate(self, data):
+        professional = data.get('professional')
+        appointment_date = data.get('appointment_date')
+
+        existing_appointments = Appointment.objects.filter(
+            professional=professional,
+            appointment_date=appointment_date
+        )
+        if self.instance:
+            existing_appointments = existing_appointments.exclude(pk=self.instance.pk)
+
+        if existing_appointments.exists():
+            raise serializers.ValidationError("Este profissional já possui uma consulta marcada neste horário.")
+
+        return data
