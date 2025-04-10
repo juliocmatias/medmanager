@@ -1,30 +1,53 @@
-# Ambiente Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*.egg
+*$py.class
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+staticfiles/
+
+# If you're using Django Debug Toolbar or similar
+debug_toolbar/
+
+# Environment variables
+.env
+
+# VSCode
+.vscode/
+
+# Virtual environments
+venv/
+.env/
+.venv/
+
+# macOS
+.DS_Store
+
+# Poetry
+poetry.lock
+
+# Pytest
+*.cover
+.coveragerc
 *.egg-info/
 dist/
 build/
-.eggs/
-medmanage/__pycache__/
+*.egg
+*.egg-info/
+*.whl
 
-# Ambiente virtual (venv)
-venv/
-.env
-.env.*
+# Pytest cache
+.cache/
 
-# Arquivos do Poetry
-poetry.lock
-
-# Banco de dados local (caso esteja usando SQLite temporariamente)
-*.sqlite3
-
-# Arquivos do sistema
-.DS_Store
-Thumbs.db
-
-# VS Code
-.vscode/
+# mypy
+.mypy_cache/
+.mypy/
+.mypy.ini
 
 # Docker
 *.log
