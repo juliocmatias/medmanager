@@ -30,4 +30,28 @@ dev:
 test-cov:
 	poetry run pytest --cov=$(APP_DIRS) --cov-report=term-missing
 
-.PHONY: test lint format check-format run dev
+# Aplicar as migrações
+migrate:
+	poetry run python manage.py migrate
+
+# Criar novas migrações
+makemigrations:
+	poetry run python manage.py makemigrations
+
+# Criar superusuário
+superuser:
+	poetry run python manage.py createsuperuser
+
+# Carregar dados de fixtures (ex: users.json)
+load-fixtures:
+	poetry run python manage.py loaddata
+
+# Ver status das migrações
+showmigrations:
+	poetry run python manage.py showmigrations
+
+# Abrir o shell do Django
+shell:
+	poetry run python manage.py shell
+
+.PHONY: test lint format check-format run dev test-cov migrate makemigrations superuser load-fixtures showmigrations shell
