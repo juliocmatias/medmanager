@@ -51,3 +51,11 @@ build/
 *.db
 *.tar
 docker-compose.override.yml
+
+# pytest
+.cache/
+*.cover
+*.coverage
+*.hypothesis/
+*.pytest_cache/
+*htmlcov*
