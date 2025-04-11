@@ -3,8 +3,6 @@ import re
 from django.utils import timezone
 from rest_framework import serializers
 
-from core import models as core_models
-
 from .models import Appointment, HealthProfessional
 
 
@@ -54,20 +52,14 @@ class HealthProfessionalSerializer(serializers.ModelSerializer):
         if len(cleaned) < 10 or len(cleaned) > 11:
             raise serializers.ValidationError("Número de telefone inválido.")
 
+        # Verificar duplicidade diretamente no Python
         existing = HealthProfessional.objects.all()
-        existing = existing.annotate(
-            cleaned_phone=core_models.Func(
-                core_models.F("phone"),
-                function="REGEXP_REPLACE",
-                template="%(function)s(%(expressions)s, '[^0-9]', '', 'g')",
-            )
-        ).filter(cleaned_phone=cleaned)
-
-        if self.instance:
-            existing = existing.exclude(pk=self.instance.pk)
-
-        if existing.exists():
-            raise serializers.ValidationError("O número de telefone já existe.")
+        for professional in existing:
+            existing_cleaned = self._clean_phone(professional.phone)
+            if existing_cleaned == cleaned and (
+                not self.instance or professional.pk != self.instance.pk
+            ):
+                raise serializers.ValidationError("O número de telefone já existe.")
 
         return value
 
