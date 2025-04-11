@@ -30,6 +30,9 @@ dev:
 test-cov:
 	poetry run pytest --cov=$(APP_DIRS) --cov-report=term-missing
 
+test-cov-html:
+	poetry run pytest --cov=core --cov-report=html
+
 # Aplicar as migrações
 migrate:
 	poetry run python manage.py migrate
@@ -54,4 +57,4 @@ showmigrations:
 shell:
 	poetry run python manage.py shell
 
-.PHONY: test lint format check-format run dev test-cov migrate makemigrations superuser load-fixtures showmigrations shell
+.PHONY: test lint format check-format run dev test-cov migrate makemigrations superuser load-fixtures showmigrations shell test-cov-html
